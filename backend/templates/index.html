@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Air Quality Dashboard</title>
+    <style>
+        body{
+            font-family: Arial;
+            text-align:center;
+            background:#929ae3;
+        }
+
+        .card{
+            background:rgb(223, 125, 210);
+            width:350px;
+            margin:auto;
+            margin-top:100px;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        button{
+            padding:10px 20px;
+            margin:10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Live Air Monitoring Dashboard</h1>
+
+    <h2>Temperature: <span id="temp">--</span> °C</h2>
+    <h2>Gas Value: <span id="gas">--</span></h2>
+
+    <button onclick="sendCommand('ON')">LED ON</button>
+    <button onclick="sendCommand('OFF')">LED OFF</button>
+</div>
+
+<script>
+
+async function fetchData(){
+    const response = await fetch("/airdata");
+    const data = await response.json();
+
+    document.getElementById("temp").innerText = data.temp;
+    document.getElementById("gas").innerText = data.gas;
+}
+
+async function sendCommand(command){
+    await fetch("/control",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            command:command
+        })
+    });
+}
+
+fetchData();
+setInterval(fetchData,2000);
+
+</script>
+
+</body>
+</html>
