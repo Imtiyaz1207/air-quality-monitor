@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IoT Dashboard</title>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+  <style>
+    body { font-family: Arial; text-align: center; background:#f2f2f2; }
+    .card { background:white; padding:20px; margin-top:80px; display:inline-block; border-radius:10px; }
+    .value { font-size:30px; color:blue; }
+    button { padding:10px 20px; margin:10px; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>🌍 Live Air Quality</h1>
+
+  <h2>Temp: <span id="temp">--</span></h2>
+  <h2>Gas: <span id="gas">--</span></h2>
+
+  <button onclick="send('ON')">LED ON</button>
+  <button onclick="send('OFF')">LED OFF</button>
+</div>
+
+<script>
+const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
+
+client.on("connect", function () {
+    client.subscribe("shaik/air/data");
+});
+
+client.on("message", function (topic, message) {
+    let data = JSON.parse(message.toString());
+
+    document.getElementById("temp").innerText = data.temp;
+    document.getElementById("gas").innerText = data.gas;
+});
+
+// CONTROL (instant)
+function send(cmd){
+    client.publish("shaik/air/control", cmd);
+}
+</script>
+
+</body>
+</html>
