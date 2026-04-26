@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Air Quality Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f2f2f2;
+        }
+
+        .card {
+            margin-top: 80px;
+            background: white;
+            display: inline-block;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h1 { color: green; }
+
+        .value {
+            font-size: 28px;
+            color: blue;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+        }
+
+        .on { background: green; color: white; }
+        .off { background: red; color: white; }
+    </style>
+
+    <script>
+        async function fetchData(){
+            let res = await fetch("/data");
+            let data = await res.json();
+
+            document.getElementById("temp").innerText = data.temp;
+            document.getElementById("gas").innerText = data.gas;
+            document.getElementById("time").innerText = data.time;
+        }
+
+        function send(cmd){
+            fetch("/control/" + cmd);
+        }
+
+        setInterval(fetchData, 2000);
+    </script>
+</head>
+
+<body onload="fetchData()">
+
+<div class="card">
+    <h1>🌍 Air Quality Monitor</h1>
+
+    <h2>Temperature: <span id="temp" class="value">--</span> °C</h2>
+    <h2>Gas: <span id="gas" class="value">--</span></h2>
+    <h3>Time: <span id="time">--</span></h3>
+
+    <button class="on" onclick="send('ON')">LED ON</button>
+    <button class="off" onclick="send('OFF')">LED OFF</button>
+</div>
+
+</body>
+</html>
